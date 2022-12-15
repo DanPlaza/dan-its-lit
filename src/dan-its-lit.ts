@@ -10,8 +10,11 @@ export class DanItsLit extends LitElement {
   /**
    * Whether or not the users are allowed to click only one time to increase the counter.
    */
-  @property({ type: Boolean })
-  allowsOneTimeClick = false;
+  @property({
+    type: Boolean,
+    attribute: 'allows-one-time-click',
+  })
+  allowsOneTimeClick: boolean = false;
 
   /**
    * The number of times the button has been clicked.
@@ -31,9 +34,11 @@ export class DanItsLit extends LitElement {
   private _hasBeenClicked: boolean = false;
 
   render() {
+    const currentCount = this.count > 0 ? ` x${this.count}` : '';
+
     return html`
-      <button @click=${this._litHandler}>
-        <img src=${fireIcon} class="logo lit" alt="Dan's fire icon" /> x ${this.count} | <span class="label">${this._label}</span>
+      <button type="button" @click=${this._litHandler}>
+        <img src=${fireIcon} class="button__icon" alt="Dan's fire icon" />${currentCount} | <span class="label">${this._label}</span>
       </button>
     `
   }
@@ -51,7 +56,7 @@ export class DanItsLit extends LitElement {
       // Disable button and assign class 
       this._hasBeenClicked = false;
       this.count -= 1;
-      this._updateLabel(false);
+      this._updateLabel();
 
       return;
     }
@@ -60,7 +65,7 @@ export class DanItsLit extends LitElement {
 
     this._hasBeenClicked = true;
     this.count += 1;
-    this._updateLabel(true);
+    this._updateLabel();
   }
 
   /**
@@ -68,19 +73,17 @@ export class DanItsLit extends LitElement {
    * 
    * @param {boolean} isIncreasing Whether or not the label should be updated because of an increase in the counter
    */
-  private _updateLabel(isIncreasing: boolean) {
-    if (this.count >= 500) {
-      this._label = 'Supernova!';
-    } else if (this.count >= 50) {
-      this._label = 'Burn, baby!';
-    } else if (this.count >= 5) {
-      this._label = 'Fire rises!';
-    } else if (this.count >= 1) {
+  private _updateLabel() {
+    if (this.count < 1) {
+      this._label = 'Light it up!';
+    } else if (this.count < 5) {
       this._label = 'Heating up!';
-    }
-    
-    if (isIncreasing) {
-      // Trigger some animation
+    } else if (this.count < 50) {
+      this._label = 'Fire rises!';
+    } else if (this.count < 500) {
+      this._label = 'Burn, baby!';
+    } else {
+      this._label = 'Supernova!';
     }
   }
 
@@ -92,7 +95,7 @@ export class DanItsLit extends LitElement {
       text-align: center;
     }
 
-    .logo {
+    .button__icon {
       height: 1em;
       will-change: filter;
     }
