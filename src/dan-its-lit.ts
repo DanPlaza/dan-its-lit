@@ -34,11 +34,16 @@ export class DanItsLit extends LitElement {
   private _hasBeenClicked: boolean = false;
 
   render() {
+    this._updateLabel()
     const currentCount = this.count > 0 ? ` x${this.count}` : '';
 
     return html`
-      <button type="button" @click=${this._litHandler}>
-        <img src=${fireIcon} class="button__icon" alt="Dan's fire icon" />${currentCount} | <span class="label">${this._label}</span>
+      <button type="button" @click=${this._litHandler} aria-label="Counter">
+        <img
+          src=${fireIcon}
+          class="button__icon ${this.count > 0 ? 'button__icon__is-lit' : ''}"
+          alt="Dan's fire icon"
+        />${currentCount} | <span class="label">${this._label}</span>
       </button>
     `
   }
@@ -56,7 +61,6 @@ export class DanItsLit extends LitElement {
       // Disable button and assign class 
       this._hasBeenClicked = false;
       this.count -= 1;
-      this._updateLabel();
 
       return;
     }
@@ -65,7 +69,6 @@ export class DanItsLit extends LitElement {
 
     this._hasBeenClicked = true;
     this.count += 1;
-    this._updateLabel();
   }
 
   /**
@@ -87,6 +90,11 @@ export class DanItsLit extends LitElement {
     }
   }
 
+  /**
+   * TODO: Include the svg code directly in the template and animate flames' color, position, and size.
+   * TODO: Maybe add smoke clouds behind the button after clicking.
+   * TODO: Maybe add a tiny satan, if it's OK with the target demographic.
+   */
   static styles = css`
     :host {
       max-width: 1280px;
@@ -98,6 +106,21 @@ export class DanItsLit extends LitElement {
     .button__icon {
       height: 1em;
       will-change: filter;
+      opacity: 0.5;
+    }
+    .button__icon__is-lit {
+      opacity: 1;
+      animation-name: burn, burn-alive;
+      animation-duration: 1s, 100ms;
+      animation-iteration-count: 1, infinite;
+      animation-direction: normal, alternate;
+    }
+    button:hover .button__icon {
+      opacity: .80;
+    }
+    button:focus .button__icon,
+    button:focus-visible .button__icon {
+      opacity: 1;
     }
 
     .label {
@@ -114,18 +137,51 @@ export class DanItsLit extends LitElement {
       background-color: #1a1a1a;
       cursor: pointer;
       transition: border-color 0.25s;
+      transition: background-color ease-out 0.25s;
     }
     button:hover {
-      border-color: #646cff;
+      border-color: darkred;
     }
     button:focus,
     button:focus-visible {
-      outline: 4px auto -webkit-focus-ring-color;
+      outline: 4px auto darkred;
+    }
+    button:active {
+      background-color: white;
+      color: darkred;
     }
 
-    @media (prefers-color-scheme: light) {
-      button {
-        background-color: #f9f9f9;
+    @keyframes burn {
+      from {
+        scale: 1;
+        rotate: 0;
+      }
+
+      10% {
+        scale: 10;
+      }
+
+      20% {
+        scale: 5;
+      }
+
+      50% {
+        scale: 1.5;
+      }
+    
+      to {
+        scale 1;
+        rotate: 0;
+      }
+    }
+
+    @keyframes burn-alive {
+      from {
+        rotate: -10deg;
+      }
+    
+      to {
+        rotate: 10deg;
       }
     }
   `
